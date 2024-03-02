@@ -4,12 +4,12 @@ import sys
 import csv
 from PIL import Image
 
-#一些定义 - Configs
+#一些定义
 tilesmapSize=(16,16) #Tilesmap的行列数
 tileSize=16 #一个Tile块的边长
 tileScale=2
 
-#定义函数 - Functions
+#定义函数
 def loadMap(data_path):
     '''加载地图 - Load a map'''
     tuples=[]
@@ -27,25 +27,49 @@ def getTileImage(master_image_path,size,line,column,scale=1.0):
     image_data = tile_img.tobytes()
     image_dimensions = tile_img.size
     return pygame.image.fromstring(image_data,image_dimensions,'RGBA')
-#定义类 - Classes
+#定义类
 pass
-#关于Pygame的初始化 - Pygame Init
+#关于Pygame的初始化
+print('-=- Init Pygame -=-')
 pygame.init()
 screen=pygame.display.set_mode((960,640))
 clock=pygame.time.Clock()
-#主程序 - Main
+#加载Tile
+tileImg = []
+for i in range(tilesmapSize[0]):
+    for j in range(tilesmapSize[1]):
+        tileImg.append(getTileImage('tiles.png',tileSize,i,j,tileScale))
+#主程序
+print('-=- Load Map -=-')
 map=loadMap('maps/testmap.csv')
+
+mapPos=[0,0]
+
+print('-=- Game Start -=-')
 while True:
     clock.tick(60)
+
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             pygame.quit()
             sys.exit()
+    keys_pressed=pygame.key.get_pressed()
+    if keys_pressed[pygame.K_LEFT]:
+        mapPos[0]+=5
+    if keys_pressed[pygame.K_RIGHT]:
+        mapPos[0]-=5
+    if keys_pressed[pygame.K_UP]:
+        mapPos[1]+=5
+    if keys_pressed[pygame.K_DOWN]:
+        mapPos[1]-=5
+    
+    screen.fill((0, 0, 0))
     for i in range(len(map)):
         for j in range(len(map[0])):
             screen.blit(
-                getTileImage('tiles.png',tileSize,int(map[i][j])//tileSize,int(map[i][j])%tileSize,tileScale),
-                (j*tileSize*tileScale,i*tileSize*tileScale)
+                # getTileImage('tiles.png',tileSize,int(map[i][j])//tileSize,int(map[i][j])%tileSize,tileScale),
+                tileImg[int(map[i][j])],
+                (j*tileSize*tileScale+mapPos[0],i*tileSize*tileScale+mapPos[1])
                         )
-    # screen.blit(getTileImage('tiles.png',16,2,1,3),(0,0)) #测试getTileImage函数
-    pygame.display.flip()
+    # screen.blit(getTileImage('tiles.png',16,2,1,3),(mapPos[0],mapPos[1])) #测试getTileImage函数
+    pygame.display.update()
