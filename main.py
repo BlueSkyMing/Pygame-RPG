@@ -38,7 +38,7 @@ clock=pygame.time.Clock()
 tileImg = []
 for i in range(tilesmapSize[0]):
     for j in range(tilesmapSize[1]):
-        tileImg.append(getTileImage('tiles.png',tileSize,i,j,tileScale))
+        tileImg.append(getTileImage('assets/tiles.png',tileSize,i,j,tileScale))
 #主程序
 print('-=- Load Map -=-')
 map=loadMap('maps/testmap.csv')
@@ -47,8 +47,10 @@ mapPos=[0,0]
 
 print('-=- Game Start -=-')
 while True:
+    #帧相关（丝滑60fps
     clock.tick(60)
 
+    #按键监测
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             pygame.quit()
@@ -62,14 +64,17 @@ while True:
         mapPos[1]+=5
     if keys_pressed[pygame.K_DOWN]:
         mapPos[1]-=5
-    
+
+    #绘制部分
     screen.fill((0, 0, 0))
     for i in range(len(map)):
         for j in range(len(map[0])):
             screen.blit(
-                # getTileImage('tiles.png',tileSize,int(map[i][j])//tileSize,int(map[i][j])%tileSize,tileScale),
+                # getTileImage('tiles.png',tileSize,int(map[i][j])//tileSize,int(map[i][j])%tileSize,tileScale), #过时的垃圾
                 tileImg[int(map[i][j])],
                 (j*tileSize*tileScale+mapPos[0],i*tileSize*tileScale+mapPos[1])
                         )
     # screen.blit(getTileImage('tiles.png',16,2,1,3),(mapPos[0],mapPos[1])) #测试getTileImage函数
+    
+    #万事俱备，只欠update
     pygame.display.update()
